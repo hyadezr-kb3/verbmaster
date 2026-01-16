@@ -1,0 +1,469 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { Volume2, ArrowLeft, Delete, Check, Trophy } from 'lucide-react';
+
+// --- Data Library (Day 1 - Day 20) ---
+// Complete list 1-100
+const VERB_DATA = {
+  "Day 1": [
+    { present: "bang", past: "banged", participle: "banging" },
+    { present: "bark", past: "barked", participle: "barking" },
+    { present: "boil", past: "boiled", participle: "boiling" },
+    { present: "climb", past: "climbed", participle: "climbing" },
+    { present: "collect", past: "collected", participle: "collecting" }
+  ],
+  "Day 2": [
+    { present: "cook", past: "cooked", participle: "cooking" },
+    { present: "cry", past: "cried", participle: "crying" },
+    { present: "dance", past: "danced", participle: "dancing" },
+    { present: "finish", past: "finished", participle: "finishing" },
+    { present: "follow", past: "followed", participle: "following" }
+  ],
+  "Day 3": [
+    { present: "happen", past: "happened", participle: "happening" },
+    { present: "help", past: "helped", participle: "helping" },
+    { present: "laugh", past: "laughed", participle: "laughing" },
+    { present: "listen", past: "listened", participle: "listening" },
+    { present: "look", past: "looked", participle: "looking" }
+  ],
+  "Day 4": [
+    { present: "jump", past: "jumped", participle: "jumping" },
+    { present: "open", past: "opened", participle: "opening" },
+    { present: "pack", past: "packed", participle: "packing" },
+    { present: "paint", past: "painted", participle: "painting" },
+    { present: "pick", past: "picked", participle: "picking" }
+  ],
+  "Day 5": [
+    { present: "play", past: "played", participle: "playing" },
+    { present: "point", past: "pointed", participle: "pointing" },
+    { present: "pull", past: "pulled", participle: "pulling" },
+    { present: "push", past: "pushed", participle: "pushing" },
+    { present: "roll", past: "rolled", participle: "rolling" }
+  ],
+  "Day 6": [
+    { present: "shout", past: "shouted", participle: "shouting" },
+    { present: "show", past: "showed", participle: "showing" },
+    { present: "snore", past: "snored", participle: "snoring" },
+    { present: "stay", past: "stayed", participle: "staying" },
+    { present: "stop", past: "stopped", participle: "stopping" }
+  ],
+  "Day 7": [
+    { present: "study", past: "studied", participle: "studying" },
+    { present: "talk", past: "talked", participle: "talking" },
+    { present: "trip", past: "tripped", participle: "tripping" },
+    { present: "try", past: "tried", participle: "trying" },
+    { present: "want", past: "wanted", participle: "wanting" }
+  ],
+  "Day 8": [
+    { present: "wash", past: "washed", participle: "washing" },
+    { present: "watch", past: "watched", participle: "watching" },
+    { present: "beat", past: "beat", participle: "beating" },
+    { present: "begin", past: "began", participle: "beginning" },
+    { present: "bite", past: "bit", participle: "biting" }
+  ],
+  "Day 9": [
+    { present: "blow", past: "blew", participle: "blowing" },
+    { present: "break", past: "broke", participle: "breaking" },
+    { present: "bring", past: "brought", participle: "bringing" },
+    { present: "buy", past: "bought", participle: "buying" },
+    { present: "catch", past: "caught", participle: "catching" }
+  ],
+  "Day 10": [
+    { present: "come", past: "came", participle: "coming" },
+    { present: "draw", past: "drew", participle: "drawing" },
+    { present: "drink", past: "drank", participle: "drinking" },
+    { present: "eat", past: "ate", participle: "eating" },
+    { present: "fall", past: "fell", participle: "falling" }
+  ],
+  "Day 11": [
+    { present: "feel", past: "felt", participle: "feeling" },
+    { present: "fight", past: "fought", participle: "fighting" },
+    { present: "find", past: "found", participle: "finding" },
+    { present: "fly", past: "flew", participle: "flying" },
+    { present: "get", past: "got", participle: "getting" }
+  ],
+  "Day 12": [
+    { present: "give", past: "gave", participle: "giving" },
+    { present: "go", past: "went", participle: "going" },
+    { present: "grow", past: "grew", participle: "growing" },
+    { present: "have", past: "had", participle: "having" },
+    { present: "hear", past: "heard", participle: "hearing" }
+  ],
+  "Day 13": [
+    { present: "hide", past: "hid", participle: "hiding" },
+    { present: "hit", past: "hit", participle: "hitting" },
+    { present: "hurt", past: "hurt", participle: "hurting" },
+    { present: "learn", past: "learned", participle: "learning" },
+    { present: "leave", past: "left", participle: "leaving" }
+  ],
+  "Day 14": [
+    { present: "lose", past: "lost", participle: "losing" },
+    { present: "keep", past: "kept", participle: "keeping" },
+    { present: "kneel", past: "knelt", participle: "kneeling" },
+    { present: "know", past: "knew", participle: "knowing" },
+    { present: "make", past: "made", participle: "making" }
+  ],
+  "Day 15": [
+    { present: "pay", past: "paid", participle: "paying" },
+    { present: "put", past: "put", participle: "putting" },
+    { present: "read", past: "read", participle: "reading" },
+    { present: "ride", past: "rode", participle: "riding" },
+    { present: "ring", past: "rang", participle: "ringing" }
+  ],
+  "Day 16": [
+    { present: "rise", past: "rose", participle: "rising" },
+    { present: "run", past: "ran", participle: "running" },
+    { present: "say", past: "said", participle: "saying" },
+    { present: "see", past: "saw", participle: "seeing" },
+    { present: "sell", past: "sold", participle: "selling" }
+  ],
+  "Day 17": [
+    { present: "send", past: "sent", participle: "sending" },
+    { present: "sit", past: "sat", participle: "sitting" },
+    { present: "sing", past: "sang", participle: "singing" },
+    { present: "sleep", past: "slept", participle: "sleeping" },
+    { present: "smell", past: "smelled", participle: "smelling" }
+  ],
+  "Day 18": [
+    { present: "speak", past: "spoke", participle: "speaking" },
+    { present: "spell", past: "spelled", participle: "spelling" },
+    { present: "stand", past: "stood", participle: "standing" },
+    { present: "swim", past: "swam", participle: "swimming" },
+    { present: "swing", past: "swung", participle: "swinging" }
+  ],
+  "Day 19": [
+    { present: "take", past: "took", participle: "taking" },
+    { present: "teach", past: "taught", participle: "teaching" },
+    { present: "tear", past: "tore", participle: "tearing" },
+    { present: "tell", past: "told", participle: "telling" },
+    { present: "think", past: "thought", participle: "thinking" }
+  ],
+  "Day 20": [
+    { present: "throw", past: "threw", participle: "throwing" },
+    { present: "understand", past: "understood", participle: "understanding" },
+    { present: "wake", past: "woke", participle: "waking" },
+    { present: "wear", past: "wore", participle: "wearing" },
+    { present: "write", past: "wrote", participle: "writing" }
+  ]
+};
+
+const FIELDS = [
+  { key: 'present', label: 'Present' },
+  { key: 'past', label: 'Past' },
+  { key: 'participle', label: 'P. Participle' }
+];
+
+export default function App() {
+  const [view, setView] = useState('menu'); // 'menu', 'game', 'complete'
+  const [selectedDay, setSelectedDay] = useState(null);
+  const [currentVerbIndex, setCurrentVerbIndex] = useState(0);
+  
+  // Game State
+  const [userSpellings, setUserSpellings] = useState({ present: "", past: "", participle: "" });
+  const [activeField, setActiveField] = useState('present'); 
+  const [fieldStatus, setFieldStatus] = useState({ present: "idle", past: "idle", participle: "idle" }); 
+  const [letterPool, setLetterPool] = useState([]);
+  const [isAllCorrect, setIsAllCorrect] = useState(false);
+  
+  // Ref for scrolling
+  const scrollContainerRef = useRef(null);
+
+  const currentDayList = selectedDay ? VERB_DATA[selectedDay] : [];
+  const currentVerbObj = currentDayList[currentVerbIndex];
+
+  // Initialize new word
+  useEffect(() => {
+    if (view === 'game' && currentVerbObj) {
+      if (!currentVerbObj.present) {
+        alert("This day has no verbs yet! Please fill in the VERB_DATA in the code.");
+        setView('menu');
+        return;
+      }
+      generateLetterPool();
+      setUserSpellings({ present: "", past: "", participle: "" });
+      setFieldStatus({ present: "idle", past: "idle", participle: "idle" });
+      setActiveField('present');
+      setIsAllCorrect(false);
+      
+      // Reset scroll to top
+      if(scrollContainerRef.current) {
+        scrollContainerRef.current.scrollTop = 0;
+      }
+    }
+  }, [currentVerbIndex, view, selectedDay]);
+
+  const generateLetterPool = () => {
+    if (!currentVerbObj || !currentVerbObj.present) return;
+
+    const presentLetters = currentVerbObj.present.split('');
+    const pastLetters = currentVerbObj.past.split('');
+    const partLetters = currentVerbObj.participle.split('');
+    
+    // Random distractors (3 letters)
+    const alphabet = "abcdefghijklmnopqrstuvwxyz";
+    const randomLetters = Array.from({ length: 3 }, () => alphabet[Math.floor(Math.random() * alphabet.length)]);
+
+    const allSourceLetters = [
+      ...presentLetters, 
+      ...pastLetters, 
+      ...partLetters, 
+      ...randomLetters
+    ];
+    
+    const uniqueLetters = Array.from(new Set(allSourceLetters));
+    const shuffled = uniqueLetters.sort(() => Math.random() - 0.5);
+    setLetterPool(shuffled);
+  };
+
+  const speakWord = (text) => {
+    if (!text) return;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'en-US';
+    utterance.rate = 0.8; 
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const handleLetterClick = (letter) => {
+    if (isAllCorrect) return;
+    setUserSpellings(prev => ({
+      ...prev,
+      [activeField]: prev[activeField] + letter
+    }));
+    setFieldStatus(prev => ({
+      ...prev,
+      [activeField]: 'idle'
+    }));
+  };
+
+  const handleBackspace = () => {
+    if (isAllCorrect) return;
+    setUserSpellings(prev => ({
+      ...prev,
+      [activeField]: prev[activeField].slice(0, -1)
+    }));
+    setFieldStatus(prev => ({
+      ...prev,
+      [activeField]: 'idle'
+    }));
+  };
+
+  const checkAllAnswers = () => {
+    const newStatus = {};
+    let allGood = true;
+
+    FIELDS.forEach(({ key }) => {
+      const target = currentVerbObj[key];
+      const input = userSpellings[key];
+      
+      if (input.toLowerCase() === target.toLowerCase()) {
+        newStatus[key] = 'correct';
+      } else {
+        newStatus[key] = 'wrong';
+        allGood = false;
+      }
+    });
+
+    setFieldStatus(newStatus);
+
+    if (allGood) {
+      setIsAllCorrect(true);
+      const utterance = new SpeechSynthesisUtterance("Great job!");
+      utterance.rate = 1.2;
+      window.speechSynthesis.speak(utterance);
+      setTimeout(nextVerb, 1500);
+    } else {
+      if (navigator.vibrate) navigator.vibrate(200);
+      const firstWrong = FIELDS.find(f => newStatus[f.key] === 'wrong');
+      if (firstWrong) {
+        setActiveField(firstWrong.key);
+      }
+    }
+  };
+
+  const nextVerb = () => {
+    if (currentVerbIndex < currentDayList.length - 1) {
+      setCurrentVerbIndex(prev => prev + 1);
+    } else {
+      setView('complete');
+    }
+  };
+
+  const startDay = (day) => {
+    setSelectedDay(day);
+    setCurrentVerbIndex(0);
+    setView('game');
+  };
+
+  const goHome = () => {
+    setView('menu');
+    setSelectedDay(null);
+  };
+
+  // --- Views ---
+
+  if (view === 'menu') {
+    return (
+      <div className="min-h-screen bg-blue-50 flex flex-col items-center p-6 font-sans">
+        <h1 className="text-3xl font-bold text-blue-600 mb-2">Verb Master</h1>
+        <p className="text-gray-600 mb-6">Daily Spelling Drill</p>
+        
+        {/* Scrollable grid container for 20 days */}
+        <div className="w-full max-w-md overflow-y-auto max-h-[70vh] pb-10 px-2">
+          <div className="grid grid-cols-3 gap-3">
+            {Object.keys(VERB_DATA).map(day => {
+              const count = VERB_DATA[day].filter(v => v.present).length;
+              return (
+                <button
+                  key={day}
+                  onClick={() => startDay(day)}
+                  className={`
+                    p-4 rounded-xl shadow-sm active:scale-95 transition-transform border-b-4 flex flex-col items-center justify-center gap-1
+                    ${count > 0 ? 'bg-white border-blue-200 hover:bg-blue-50' : 'bg-gray-100 border-gray-200 opacity-60'}
+                  `}
+                >
+                  <span className="text-lg font-bold text-gray-700">{day.replace('Day ', '')}</span>
+                  <span className="text-[10px] text-gray-400">{count > 0 ? `${count} verbs` : 'Empty'}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (view === 'complete') {
+    return (
+      <div className="min-h-screen bg-yellow-50 flex flex-col items-center justify-center p-6 text-center">
+        <Trophy size={80} className="text-yellow-500 mb-4 animate-bounce" />
+        <h2 className="text-3xl font-bold text-gray-800 mb-2">Complete!</h2>
+        <p className="text-gray-600 mb-8">You finished all verbs for {selectedDay}.</p>
+        <button
+          onClick={goHome}
+          className="bg-blue-500 text-white px-8 py-3 rounded-full font-bold shadow-lg active:scale-95"
+        >
+          Back to Menu
+        </button>
+      </div>
+    );
+  }
+
+  // Game View
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col font-sans max-w-md mx-auto relative">
+      {/* Header */}
+      <div className="bg-white p-4 shadow-sm flex items-center justify-between sticky top-0 z-10">
+        <button onClick={goHome} className="p-2 rounded-full hover:bg-gray-100">
+          <ArrowLeft size={24} className="text-gray-600" />
+        </button>
+        <div className="flex flex-col items-center">
+          <span className="font-bold text-gray-800">{selectedDay}</span>
+          <span className="text-xs text-gray-500">
+            Verb {currentVerbIndex + 1} / {currentDayList.length}
+          </span>
+        </div>
+        <div className="w-10"></div>
+      </div>
+
+      {/* Progress Bar */}
+      <div className="w-full h-1.5 bg-gray-200">
+        <div 
+          className="h-full bg-blue-500 transition-all duration-300"
+          style={{ width: `${((currentVerbIndex) / currentDayList.length) * 100}%` }}
+        ></div>
+      </div>
+
+      <div 
+        ref={scrollContainerRef}
+        className="flex-1 p-4 flex flex-col items-center overflow-y-auto pb-64"
+      > 
+        {/* pb-64 (approx 256px) ensures last field scrolls above keyboard */}
+        
+        {/* Main Prompt (Audio Only) */}
+        <div className="mb-6 flex flex-col items-center gap-2 mt-4">
+           <button 
+             onClick={() => speakWord(currentVerbObj?.present)} 
+             className="bg-blue-100 hover:bg-blue-200 text-blue-600 p-5 rounded-full shadow-sm transition-transform active:scale-95 flex items-center justify-center"
+           >
+              <Volume2 size={32} />
+           </button>
+           <span className="text-xs text-gray-400">Tap to listen</span>
+        </div>
+
+        {/* Input Fields Area */}
+        <div className="w-full flex flex-col gap-3 mb-6">
+          {FIELDS.map((field) => (
+            <div key={field.key} className="flex flex-col">
+              <span className="text-xs font-semibold text-gray-500 mb-1 ml-1 uppercase">{field.label}</span>
+              <div 
+                onClick={() => setActiveField(field.key)}
+                className={`
+                  relative min-h-[60px] h-auto py-2 flex items-center px-4 rounded-xl border-2 transition-all cursor-pointer bg-white
+                  ${activeField === field.key ? 'border-blue-400 ring-2 ring-blue-100' : 'border-gray-200'}
+                  ${fieldStatus[field.key] === 'correct' ? 'border-green-400 bg-green-50' : ''}
+                  ${fieldStatus[field.key] === 'wrong' ? 'border-red-400 bg-red-50' : ''}
+                `}
+              >
+                {/* Text Content */}
+                <div className="flex flex-wrap gap-0.5 w-full">
+                  {userSpellings[field.key].split('').map((char, idx) => (
+                    <span key={idx} className="text-xl font-bold text-gray-800">{char}</span>
+                  ))}
+                  {/* Blinking Cursor if active */}
+                  {activeField === field.key && !isAllCorrect && (
+                    <span className="w-0.5 h-6 bg-blue-500 animate-pulse self-center ml-0.5"></span>
+                  )}
+                  {/* Placeholder if empty */}
+                  {userSpellings[field.key].length === 0 && activeField !== field.key && (
+                    <span className="text-gray-300 text-base italic">Tap to spell...</span>
+                  )}
+                </div>
+
+                {/* Status Icon */}
+                {fieldStatus[field.key] === 'correct' && (
+                  <Check size={18} className="text-green-500 ml-auto shrink-0" />
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Keyboard Area - Fixed at bottom */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 max-w-md mx-auto z-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+          <div className="w-full grid grid-cols-7 gap-1.5 mb-3">
+            {letterPool.map((letter, idx) => (
+              <button
+                key={`${letter}-${idx}`}
+                onClick={() => handleLetterClick(letter)}
+                className="aspect-square bg-gray-50 border border-gray-200 active:bg-gray-200 rounded-md text-lg font-bold text-gray-700 shadow-sm flex items-center justify-center transition-all"
+              >
+                {letter}
+              </button>
+            ))}
+          </div>
+
+          {/* Controls */}
+          <div className="flex gap-3 w-full">
+            <button
+              onClick={handleBackspace}
+              className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors"
+            >
+              <Delete size={20} />
+              Del
+            </button>
+            <button
+              onClick={checkAllAnswers}
+              className={`
+                flex-[2] py-3 rounded-xl font-bold text-white flex items-center justify-center gap-2 transition-all shadow-lg
+                ${isAllCorrect ? 'bg-green-500' : 'bg-blue-500 hover:bg-blue-600 active:scale-95'}
+              `}
+            >
+              <Check size={20} />
+              Check All
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+}
